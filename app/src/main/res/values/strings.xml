@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">PetSimulator</string>
+    <string name="login"><u>Login</u></string>
+    <string name="register"><u>Register</u></string>
 </resources>

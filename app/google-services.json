@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "1035745470063",
+    "firebase_url": "https://cmsc436-be6f3-default-rtdb.firebaseio.com",
+    "project_id": "cmsc436-be6f3",
+    "storage_bucket": "cmsc436-be6f3.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1035745470063:android:f924b74506ff00849a4f9a",
+        "android_client_info": {
+          "package_name": "com.example.finalproject"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB6_7e3Wo4LwfZS2Twd_jSslKy6OSpbKu0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1035745470063:android:c8b8029fb3b44db69a4f9a",
+        "android_client_info": {
+          "package_name": "com.example.firebase"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB6_7e3Wo4LwfZS2Twd_jSslKy6OSpbKu0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1035745470063:android:d6a31fdc6ea788d79a4f9a",
+        "android_client_info": {
+          "package_name": "com.example.firebasev2"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB6_7e3Wo4LwfZS2Twd_jSslKy6OSpbKu0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
