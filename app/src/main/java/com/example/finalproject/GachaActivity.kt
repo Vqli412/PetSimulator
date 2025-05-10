@@ -4,7 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 
-class MainActivity : AppCompatActivity() {
+class GachaActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -15,12 +15,9 @@ class MainActivity : AppCompatActivity() {
             }
             setOnProceedClickListener {
                 // Handle proceed action
-
+                startActivity(Intent(this@GachaActivity, MainActivity::class.java))
             }
         }
-
-        var intent: Intent = Intent(this, GachaActivity::class.java)
-        startActivity(intent)
 
         setContentView(gachaView)
     }
