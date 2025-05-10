@@ -10,15 +10,11 @@ class GachaActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         val gachaView = GachaView(this).apply {
-            setTitle("You Won A Dog!")
-            setRewardImage(R.drawable.dog) // Set the dog image
             setOnSelectClickListener {
-                // Handle select action
-                Toast.makeText(context, "Dog selected!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Capybara selected!", Toast.LENGTH_SHORT).show()
             }
             setOnProceedClickListener {
-                // Handle proceed action
-                startActivity(Intent(this@GachaActivity, MainActivity::class.java))
+                startActivity(Intent(this@GachaActivity, PethomeActivity::class.java))
             }
         }
 

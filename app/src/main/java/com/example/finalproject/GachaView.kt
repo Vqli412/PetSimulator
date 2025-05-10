@@ -1,9 +1,10 @@
 package com.example.finalproject
+import android.animation.ObjectAnimator
 import android.content.Context
 import android.graphics.Color
 import android.util.AttributeSet
+import android.util.Log
 import android.view.Gravity
-import android.view.View
 import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -21,6 +22,7 @@ class GachaView @JvmOverloads constructor(
     private val rewardImageView: ImageView
     private val selectButton: Button
     private val proceedButton: Button
+    private var clickCount = 0
 
     init {
         // Set up the main container
@@ -55,7 +57,7 @@ class GachaView @JvmOverloads constructor(
 
         // Reward ImageView (replaces the placeholder)
         rewardImageView = ImageView(context).apply {
-            setImageResource(R.drawable.dog) // Set default image
+            setImageResource(R.drawable.giftbox_closed) // Set default image
             scaleType = ImageView.ScaleType.CENTER_CROP
             layoutParams = LinearLayout.LayoutParams(
                 resources.getDimensionPixelSize(R.dimen.reward_size),
@@ -112,9 +114,54 @@ class GachaView @JvmOverloads constructor(
         // Add main layout to this custom view
         addView(mainLayout)
 
+        // Initialize the click logic on the box image
+        setupBoxClicks()
+
         // Set up click listeners
         setupClickListeners()
     }
+
+    private fun setupBoxClicks() {
+        rewardImageView.setOnClickListener {
+            clickCount++
+            when (clickCount) {
+                in 1..2 -> {
+                    //jiggle box on 1st and 2nd click
+                    ObjectAnimator.ofFloat(
+                        rewardImageView,
+                        "translationX",
+                        0f, 25f, -25f, 15f, -15f, 0f
+                    ).apply {
+                        duration = 300L
+                        start()
+                    }
+                }
+                3 -> {
+                    // show opened box on the 3rd click
+                    rewardImageView.setImageResource(R.drawable.giftbox_open)
+                    postDelayed({
+                        rewardImageView.setImageResource(R.drawable.orange_capy_default)
+                        rewardImageView.apply {
+                            alpha = 0f
+                            scaleX = 0.8f
+                            scaleY = 0.8f
+                            animate()
+                                .alpha(1f)
+                                .scaleX(1f)
+                                .scaleY(1f)
+                                .setDuration(400L)
+                                .start()
+                        }
+                        setTitle("You Won A Capybara!")
+                    }, 800L)
+                }
+                else -> {
+                    Log.w("MainActivity", "box already opened")
+                }
+            }
+        }
+    }
+
 
     private fun setupClickListeners() {
         selectButton.setOnClickListener {

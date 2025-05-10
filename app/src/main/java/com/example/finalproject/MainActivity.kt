@@ -63,6 +63,12 @@ class MainActivity : AppCompatActivity() {
         var logListener: LoginListener = LoginListener()
         usersReference.orderByChild("email").equalTo(regEmail.text.toString())
             .addListenerForSingleValueEvent(logListener)
+
+        //need to implement a check to see if the user has pulled before:
+        //if not pulled, bring to gacha
+        //else if pulled, bring to pet homescreen
+        var intent : Intent = Intent(this, GachaActivity::class.java)
+        startActivity(intent)
     }
 
     //checks if the user exists in the database
