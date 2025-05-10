@@ -41,7 +41,9 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:33.5.0"))
     implementation("com.google.firebase:firebase-analytics")
 
-
+    //added by us for ads
+    implementation("com.google.android.gms:play-services-ads:23.5.0")
+    
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
