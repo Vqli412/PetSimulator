@@ -6,6 +6,7 @@ import android.view.Gravity
 import android.view.View
 import android.widget.Button
 import android.widget.FrameLayout
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.view.setMargins
@@ -17,7 +18,7 @@ class GachaView @JvmOverloads constructor(
 ) : FrameLayout(context, attrs, defStyleAttr) {
 
     private val titleTextView: TextView
-    private val rewardPlaceholder: View
+    private val rewardImageView: ImageView
     private val selectButton: Button
     private val proceedButton: Button
 
@@ -52,9 +53,10 @@ class GachaView @JvmOverloads constructor(
             }
         }
 
-        // Reward Placeholder (square)
-        rewardPlaceholder = View(context).apply {
-            setBackgroundColor(Color.parseColor("#6200EE"))
+        // Reward ImageView (replaces the placeholder)
+        rewardImageView = ImageView(context).apply {
+            setImageResource(R.drawable.dog) // Set default image
+            scaleType = ImageView.ScaleType.CENTER_CROP
             layoutParams = LinearLayout.LayoutParams(
                 resources.getDimensionPixelSize(R.dimen.reward_size),
                 resources.getDimensionPixelSize(R.dimen.reward_size)
@@ -104,7 +106,7 @@ class GachaView @JvmOverloads constructor(
 
         // Add all views to main layout
         mainLayout.addView(titleTextView)
-        mainLayout.addView(rewardPlaceholder)
+        mainLayout.addView(rewardImageView)
         mainLayout.addView(buttonContainer)
 
         // Add main layout to this custom view
@@ -116,22 +118,23 @@ class GachaView @JvmOverloads constructor(
 
     private fun setupClickListeners() {
         selectButton.setOnClickListener {
-            // Handle select reward button click
-            // You might want to highlight the selected reward or store the selection
-            rewardPlaceholder.setBackgroundColor(Color.parseColor("#FFD700")) // Gold color for selection
+            // Visual feedback for selection
+            rewardImageView.setColorFilter(Color.argb(150, 255, 215, 0)) // Gold tint
         }
 
         proceedButton.setOnClickListener {
-            // Handle proceed button click
-            // Typically this would navigate to another screen or show the next reward
-            // For this example, we'll just reset the view
-            rewardPlaceholder.setBackgroundColor(Color.parseColor("#6200EE"))
+            // Remove selection effect when proceeding
+            rewardImageView.clearColorFilter()
         }
     }
 
     // Public methods to customize the view
     fun setTitle(title: String) {
         titleTextView.text = title
+    }
+
+    fun setRewardImage(resId: Int) {
+        rewardImageView.setImageResource(resId)
     }
 
     fun setOnSelectClickListener(listener: OnClickListener) {
