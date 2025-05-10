@@ -11,6 +11,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.view.setMargins
+import kotlin.random.Random
 
 class GachaView @JvmOverloads constructor(
     context: Context,
@@ -22,7 +23,15 @@ class GachaView @JvmOverloads constructor(
     private val rewardImageView: ImageView
     private val selectButton: Button
     private val proceedButton: Button
+
     private var clickCount = 0
+    private var lastRewardRes: Int = 0
+    private val petDrawables = listOf(
+        R.drawable.orange_capy_default,
+        R.drawable.boba_capy_default,
+        R.drawable.clover_capy_default
+    )
+
 
     init {
         // Set up the main container
@@ -140,7 +149,7 @@ class GachaView @JvmOverloads constructor(
                     // show opened box on the 3rd click
                     rewardImageView.setImageResource(R.drawable.giftbox_open)
                     postDelayed({
-                        rewardImageView.setImageResource(R.drawable.orange_capy_default)
+                       randomRewardImage()
                         rewardImageView.apply {
                             alpha = 0f
                             scaleX = 0.8f
@@ -152,7 +161,7 @@ class GachaView @JvmOverloads constructor(
                                 .setDuration(400L)
                                 .start()
                         }
-                        setTitle("You Won A Capybara!")
+                        setTitle(randomRewardMessage())
                     }, 800L)
                 }
                 else -> {
@@ -180,8 +189,21 @@ class GachaView @JvmOverloads constructor(
         titleTextView.text = title
     }
 
-    fun setRewardImage(resId: Int) {
-        rewardImageView.setImageResource(resId)
+    fun randomRewardImage() {
+        lastRewardRes = petDrawables[Random.nextInt(petDrawables.size)]
+        rewardImageView.setImageResource(lastRewardRes)
+    }
+
+    fun randomRewardMessage(): String  {
+        var res = ""
+        if (lastRewardRes == petDrawables[0]) {
+            res = "You got Orange Capybara!"
+        } else if (lastRewardRes == petDrawables[1]) {
+            res = "You got Boba Capybara!"
+        } else if (lastRewardRes == petDrawables[2]) {
+            res = "You got Clover Capybara!"
+        }
+        return res
     }
 
     fun setOnSelectClickListener(listener: OnClickListener) {
