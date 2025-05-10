@@ -26,9 +26,6 @@
         <activity
             android:name=".GachaActivity"/>
 
-
-        <activity
-            android:name=".HomeActivity"/>
     </application>
 
 </manifest>
