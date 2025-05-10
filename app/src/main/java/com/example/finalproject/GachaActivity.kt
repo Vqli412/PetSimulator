@@ -18,7 +18,7 @@ class GachaActivity : AppCompatActivity() {
             }
             setOnProceedClickListener {
                 // Handle proceed action
-                startActivity(Intent(this@GachaActivity, HomeActivity::class.java))
+                startActivity(Intent(this@GachaActivity, MainActivity::class.java))
             }
         }
 
