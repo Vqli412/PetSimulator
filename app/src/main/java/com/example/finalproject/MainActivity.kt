@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -21,8 +22,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var logEmail: EditText
     private lateinit var logPass: EditText
     private lateinit var logSubmit: Button
-    private lateinit var regError: Text
-    private lateinit var logError: Text
+    private lateinit var regError: TextView
+    private lateinit var logError: TextView
     private lateinit var firebase: FirebaseDatabase
     private lateinit var usersReference: DatabaseReference
     private lateinit var user: User
@@ -50,7 +51,7 @@ class MainActivity : AppCompatActivity() {
         usersReference = firebase.getReference("users")
         //set register button listener
         regSubmit.setOnClickListener{register()}
-        logSubmit.setOnClickListener {login()}
+        logSubmit.setOnClickListener{login()}
     }
 
     fun register() {
@@ -59,27 +60,24 @@ class MainActivity : AppCompatActivity() {
         var regListener: RegisterListener = RegisterListener()
         usersReference.orderByChild("email").equalTo(regEmail.text.toString())
             .addListenerForSingleValueEvent(regListener)
-
-        var intent : Intent = Intent(this, GachaActivity::class.java)
-        startActivity(intent)
     }
 
     fun login() {
         var logListener: LoginListener = LoginListener()
-        usersReference.orderByChild("email").equalTo(regEmail.text.toString())
+        usersReference.orderByChild("email").equalTo(logEmail.text.toString())
             .addListenerForSingleValueEvent(logListener)
 
         //need to implement a check to see if the user has pulled before:
         //if not pulled, bring to gacha
         //else if pulled, bring to pet homescreen
-        var intent : Intent = Intent(this, GachaActivity::class.java)
-        startActivity(intent)
+
     }
 
     //checks if the user exists in the database
     inner class RegisterListener: ValueEventListener {
         override fun onDataChange(snapshot: DataSnapshot) {
             if (snapshot.exists()) {
+                regError.text = "User exists!"
                 Log.w("MainActivity", "Email exists")
             } else {
                 //add the user if the user does not exist
@@ -87,6 +85,9 @@ class MainActivity : AppCompatActivity() {
                 val newUserRef = usersReference.push()
                 newUserRef.setValue(user)
                 Log.w("MainActivity", "User added")
+                //goes to the gacha page when account first created
+                var intent : Intent = Intent(this@MainActivity, GachaActivity::class.java)
+                startActivity(intent)
             }
         }
 
@@ -106,17 +107,19 @@ class MainActivity : AppCompatActivity() {
                     if (userPass == logPass.text.toString()) {
                         Log.w("MainActivity", "Password Matches")
                         user = foundUser
+                        // if password matches go to the homepage
+                        var intent : Intent = Intent(this@MainActivity, GachaActivity::class.java)
+                        startActivity(intent)
                     } else {
                         Log.w("MainActivity", "Password does not matches")
-
+                        logError.text = "Wrong Password!"
                     }
                 } else {
                     Log.w("MainActivity", "Password matches")
                 }
             } else {
-                //add the user if the user does not exist
-                //generates a new unique key for the new user object
                 Log.w("MainActivity", "Email exists")
+                logError.text = "User does not exist!"
             }
         }
 
