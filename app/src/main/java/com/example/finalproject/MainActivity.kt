@@ -12,6 +12,7 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.IgnoreExtraProperties
 import com.google.firebase.database.ValueEventListener
+import org.w3c.dom.Text
 
 class MainActivity : AppCompatActivity() {
     private lateinit var regEmail: EditText
@@ -20,6 +21,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var logEmail: EditText
     private lateinit var logPass: EditText
     private lateinit var logSubmit: Button
+    private lateinit var regError: Text
+    private lateinit var logError: Text
     private lateinit var firebase: FirebaseDatabase
     private lateinit var usersReference: DatabaseReference
     private lateinit var user: User
@@ -38,9 +41,11 @@ class MainActivity : AppCompatActivity() {
         regEmail = findViewById(R.id.registerEmail)
         regPass = findViewById(R.id.registerPassword)
         regSubmit = findViewById(R.id.registerSubmit)
+        regError = findViewById(R.id.registerError)
         logEmail = findViewById(R.id.loginEmail)
         logPass = findViewById(R.id.loginPassword)
         logSubmit = findViewById(R.id.loginSubmit)
+        logError = findViewById(R.id.loginError)
         firebase = FirebaseDatabase.getInstance()
         usersReference = firebase.getReference("users")
         //set register button listener
@@ -100,12 +105,13 @@ class MainActivity : AppCompatActivity() {
                     var userPass = foundUser.password
                     if (userPass == logPass.text.toString()) {
                         Log.w("MainActivity", "Password Matches")
-
+                        user = foundUser
                     } else {
-                        Log.w("MainActivity", "Password Matches")
+                        Log.w("MainActivity", "Password does not matches")
+
                     }
                 } else {
-                    Log.w("MainActivity", "Password Matches")
+                    Log.w("MainActivity", "Password matches")
                 }
             } else {
                 //add the user if the user does not exist

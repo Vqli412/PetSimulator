@@ -8,6 +8,12 @@
     android:gravity="center"
     tools:context=".MainActivity">
     <TextView
+        android:id="@+id/registerError"
+        android:text=""
+        android:gravity="center"
+        android:textColor="@color/red"
+        />
+    <TextView
         android:text="@string/register"
         android:gravity="center"
         android:textStyle="bold"
@@ -65,12 +71,18 @@
         android:layout_margin="20dp"
         />
     <TextView
+        android:id="@+id/loginError"
+        android:text=""
+        android:gravity="center"
+        android:textColor="@color/red"
+        android:layout_marginTop="30dp"
+        />
+    <TextView
         android:text="@string/login"
         android:gravity="center"
         android:textStyle="bold"
         android:textSize="30sp"
         android:layout_marginBottom="10dp"
-        android:layout_marginTop="30dp"
         />
     <TableRow
         android:layout_width="wrap_content"
