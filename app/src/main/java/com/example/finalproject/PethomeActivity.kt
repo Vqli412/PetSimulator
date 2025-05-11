@@ -1,5 +1,6 @@
 package com.example.finalproject
 
+import android.content.Intent
 import android.graphics.Rect
 import android.os.Bundle
 import android.util.Log
@@ -32,6 +33,10 @@ class PethomeActivity : AppCompatActivity() {
         var statusBar: Int = rectangle.top
 
         pethomeView = PethomeView(this, width, height - statusBar)
+        pethomeView.setOnSettingsClickListener {
+            Log.d("MainActivity", "Settings tapped!")
+            startActivity(Intent(this, SettingsActivity::class.java))
+        }
 
         //create and configure adview
         adView = AdView(this).apply {
