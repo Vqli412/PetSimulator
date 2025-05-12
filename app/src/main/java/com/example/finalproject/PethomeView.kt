@@ -24,22 +24,20 @@ class PethomeView : View {
     private var capybara: Bitmap? = null
 
 
-    constructor(context: Context, width: Int, height: Int, isDay : Boolean) : super(context)  {
+    constructor(context: Context, width: Int, height: Int) : super(context)  {
         paint = Paint()
         daytime = BitmapFactory.decodeResource(resources, R.drawable.daytime)
         nighttime = BitmapFactory.decodeResource(resources, R.drawable.nighttime)
         settings = BitmapFactory.decodeResource(resources, R.drawable.settings)
         this.width = width
         this.height = height
-        isClickable = true
-        this.isDay = isDay
     }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
         // pick which Bitmap to draw
-        val bg = if (isDay) daytime else nighttime
+        val bg = if (useNight) nighttime else daytime
 
         // draw background stretched to fill the view bounds
         val srcRect = Rect(0, 0, bg.width, bg.height)
@@ -47,21 +45,16 @@ class PethomeView : View {
         canvas.drawBitmap(bg, srcRect, dstRect, paint)
 
         capybara?.let {
-            val left = (bg.width - it.width) / 6
-            val top = (bg.height - it.height) / 3
+            val left = bg.width / 5
+            val top = bg.height / 1.75
             canvas.drawBitmap(it, left.toFloat(), top.toFloat(), paint)
         }
 
-        //draw settings button
-        val scale = 0.1f
-        val buttonW = (width * scale).toInt()
-        val buttonH = (settings.height * buttonW) / settings.width
-        settingsRect.set(
-            width - buttonW,
-            0,
-            width,
-            buttonH)
-        canvas.drawBitmap(settings, null, settingsRect, paint)
+    }
+
+    fun toggleDayNight() { //use this method for toggling the switch
+        useNight = !useNight
+        invalidate()
     }
 
     fun setOnSettingsClickListener(listener: () -> Unit) {
@@ -69,7 +62,7 @@ class PethomeView : View {
     }
     fun setCapybaraImage(resId: Int) {
         val original = BitmapFactory.decodeResource(resources, resId)
-        val targetWidth = (width * 0.75).toInt()
+        val targetWidth = (width * 0.9).toInt()
         val aspectRatio = original.height.toFloat() / original.width
         val targetHeight = (targetWidth * aspectRatio).toInt()
 

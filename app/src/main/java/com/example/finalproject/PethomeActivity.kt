@@ -45,14 +45,7 @@ class PethomeActivity : AppCompatActivity() {
         var statusBar: Int = rectangle.top
 
         val prefs = getSharedPreferences(SettingsActivity.PREFS, Context.MODE_PRIVATE)
-        val isDay = prefs.getBoolean(SettingsActivity.KEY_THEME_IS_DAY, true)
-        pethomeView = PethomeView(this, width, height - statusBar, isDay)
-
-        pethomeView.setOnSettingsClickListener {
-            Log.d("MainActivity", "Settings tapped!")
-            startActivity(Intent(this, SettingsActivity::class.java))
-        }
-
+        pethomeView = PethomeView(this, width, height - statusBar)
 
         val capyResId = intent.getIntExtra("capyResId", 0)
         if (capyResId != 0) {
