@@ -51,8 +51,8 @@ class PethomeView : View {
         // Draw capybara (normal or petting)
         val toDraw = if (isPetting && pettingCapybara != null) pettingCapybara else normalCapybara
         toDraw?.let {
-            val left = bg.width / 5
-            val top = (bg.height / 1.75).toInt()
+            val left = (width - it.width) / 2
+            val top = (height - it.height) / 2 + 100
             canvas.drawBitmap(it, left.toFloat(), top.toFloat(), paint)
             capybaraRect = Rect(left, top, left + it.width, top + it.height)
         }
@@ -103,7 +103,7 @@ class PethomeView : View {
 
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
-                if (capybaraRect?.contains(x, y) == true and isDay) {
+                if (isDay && capybaraRect?.contains(x, y) == true) {
                     isDraggingCapybara = true
                     isPetting = true
                     onCapybaraTouched?.invoke()

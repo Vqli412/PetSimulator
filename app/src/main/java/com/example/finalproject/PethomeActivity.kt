@@ -19,6 +19,8 @@ import androidx.core.content.ContextCompat
 class PethomeActivity : AppCompatActivity() {
     private lateinit var pethomeView : PethomeView
     private lateinit var adView : AdView
+    private var handler: android.os.Handler? = null
+    private var happinessRunnable: Runnable? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,6 +35,7 @@ class PethomeActivity : AppCompatActivity() {
     }
 
     fun buildViewByCode() {
+        handler?.removeCallbacks(happinessRunnable!!)
         val width = resources.displayMetrics.widthPixels
         val height = resources.displayMetrics.heightPixels
         val rectangle = Rect(0, 0, 0, 0)
@@ -54,19 +57,22 @@ class PethomeActivity : AppCompatActivity() {
 
         val barHeight = 80
 
-        val happinessBar = android.widget.ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal).apply {
-            max = 1000
-            progress = CapyActivity.happiness
-            layoutParams = FrameLayout.LayoutParams(MATCH_PARENT, barHeight).apply {
-                topMargin = 50 // spacing from top of screen
-                leftMargin = 40
-                rightMargin = 40
-                gravity = android.view.Gravity.TOP
-            }
-            progressDrawable = ContextCompat.getDrawable(context, R.drawable.happiness_progress)
-            background = null
-            translationZ = 5f
-        }
+        val happinessBar =
+            android.widget.ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal)
+                .apply {
+                    max = 1000
+                    progress = CapyActivity.happiness
+                    layoutParams = FrameLayout.LayoutParams(MATCH_PARENT, barHeight).apply {
+                        topMargin = 50 // spacing from top of screen
+                        leftMargin = 40
+                        rightMargin = 40
+                        gravity = android.view.Gravity.TOP
+                    }
+                    progressDrawable =
+                        ContextCompat.getDrawable(context, R.drawable.happiness_progress)
+                    background = null
+                    translationZ = 5f
+                }
 
         val happinessText = android.widget.TextView(this).apply {
             text = "Happiness ${CapyActivity.happiness}/1000"
@@ -107,7 +113,6 @@ class PethomeActivity : AppCompatActivity() {
         }
 
 
-
         val overlayLayout = FrameLayout(this).apply {
             layoutParams = FrameLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT)
             addView(pethomeView)
@@ -127,22 +132,20 @@ class PethomeActivity : AppCompatActivity() {
         setContentView(root)
 
         // Timer to decrease happiness
-        val handler = android.os.Handler()
-        val runnable = object : Runnable {
+        handler = android.os.Handler()
+        happinessRunnable = object : Runnable {
             override fun run() {
                 if (CapyActivity.happiness > 5) {
                     CapyActivity.happiness -= 5
                     happinessBar.progress = CapyActivity.happiness
                     happinessText.text = "Happiness ${CapyActivity.happiness}/1000"
-                    handler.postDelayed(this, 700)
-                } else if (CapyActivity.happiness > 0){
+                    handler?.postDelayed(this, 700)
+                } else if (CapyActivity.happiness > 0) {
                     CapyActivity.happiness = 0
                 }
             }
         }
-        handler.post(runnable)
+        handler?.post(happinessRunnable!!)
     }
-
-
 
 }
