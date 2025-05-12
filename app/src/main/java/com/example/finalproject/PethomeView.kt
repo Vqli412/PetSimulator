@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Rect
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 
@@ -19,9 +20,9 @@ class PethomeView : View {
 
     private var width : Int = 0
     private var height : Int = 0
-    private var useNight = false
+    private var isDay = false
 
-    constructor(context: Context, width: Int, height: Int) : super(context)  {
+    constructor(context: Context, width: Int, height: Int, isDay : Boolean) : super(context)  {
         paint = Paint()
         daytime = BitmapFactory.decodeResource(resources, R.drawable.daytime)
         nighttime = BitmapFactory.decodeResource(resources, R.drawable.nighttime)
@@ -29,13 +30,14 @@ class PethomeView : View {
         this.width = width
         this.height = height
         isClickable = true
+        this.isDay = isDay
     }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
         // pick which Bitmap to draw
-        val bg = if (useNight) nighttime else daytime
+        val bg = if (isDay) daytime else nighttime
 
         // draw background stretched to fill the view bounds
         val srcRect = Rect(0, 0, bg.width, bg.height)
@@ -70,4 +72,5 @@ class PethomeView : View {
         }
         return super.onTouchEvent(event)
     }
+
 }

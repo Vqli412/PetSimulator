@@ -1,5 +1,6 @@
 package com.example.finalproject
 
+import android.content.Context
 import android.content.Intent
 import android.graphics.Rect
 import android.os.Bundle
@@ -18,11 +19,9 @@ class PethomeActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-    }
-
-    override fun onWindowFocusChanged(hasFocus: Boolean) {
-        super.onWindowFocusChanged(hasFocus)
-        buildViewByCode()
+        window.decorView.post {
+            buildViewByCode()
+        }
     }
 
     fun buildViewByCode() {
@@ -32,7 +31,10 @@ class PethomeActivity : AppCompatActivity() {
         window.decorView.getWindowVisibleDisplayFrame(rectangle)
         var statusBar: Int = rectangle.top
 
-        pethomeView = PethomeView(this, width, height - statusBar)
+        val prefs = getSharedPreferences(SettingsActivity.PREFS, Context.MODE_PRIVATE)
+        val isDay = prefs.getBoolean(SettingsActivity.KEY_THEME_IS_DAY, true)
+        pethomeView = PethomeView(this, width, height - statusBar, isDay)
+
         pethomeView.setOnSettingsClickListener {
             Log.d("MainActivity", "Settings tapped!")
             startActivity(Intent(this, SettingsActivity::class.java))

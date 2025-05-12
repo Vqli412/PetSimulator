@@ -9,8 +9,8 @@ class SettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val prefs       = getSharedPreferences(PREFS, Context.MODE_PRIVATE)
-        val savedIsDay  = prefs.getBoolean(KEY_THEME_IS_DAY, true)
+        val prefs = getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+        val isDay = prefs.getBoolean(KEY_THEME_IS_DAY, true)
 
         // Create the SettingsView
         val settingsView = SettingsView(this).apply {
@@ -19,7 +19,7 @@ class SettingsActivity : AppCompatActivity() {
             // Load saved preferences (you would typically use SharedPreferences)
             setInitialSettings(
                 soundEnabled = true, //default value
-                themeIsDay   = savedIsDay
+                themeIsDay   = isDay
             )
 
             // Set up toggle listeners
