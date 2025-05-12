@@ -7,11 +7,14 @@ import android.os.Bundle
 import android.util.Log
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
+import android.widget.FrameLayout
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
+import androidx.core.content.ContextCompat
+
 
 class PethomeActivity : AppCompatActivity() {
     private lateinit var pethomeView : PethomeView
@@ -38,13 +41,12 @@ class PethomeActivity : AppCompatActivity() {
     }
 
     fun buildViewByCode() {
-        var width: Int = resources.displayMetrics.widthPixels
-        var height: Int = resources.displayMetrics.heightPixels
-        var rectangle: Rect = Rect(0, 0, 0, 0)
+        val width = resources.displayMetrics.widthPixels
+        val height = resources.displayMetrics.heightPixels
+        val rectangle = Rect(0, 0, 0, 0)
         window.decorView.getWindowVisibleDisplayFrame(rectangle)
-        var statusBar: Int = rectangle.top
+        val statusBar = rectangle.top
 
-        val prefs = getSharedPreferences(SettingsActivity.PREFS, Context.MODE_PRIVATE)
         pethomeView = PethomeView(this, width, height - statusBar)
 
         val capyResId = intent.getIntExtra("capyResId", 0)
@@ -52,24 +54,76 @@ class PethomeActivity : AppCompatActivity() {
             pethomeView.setCapybaraImage(capyResId)
         }
 
-        //create and configure adview
         adView = AdView(this).apply {
             setAdSize(AdSize.BANNER)
             adUnitId = "ca-app-pub-3940256099942544/6300978111"
             loadAd(AdRequest.Builder().build())
         }
 
-        // building linear layout to add both views
+        val barHeight = 80
+
+        val happinessBar = android.widget.ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal).apply {
+            max = 1000
+            progress = CapyActivity.happiness
+            layoutParams = FrameLayout.LayoutParams(MATCH_PARENT, barHeight).apply {
+                topMargin = 50 // spacing from top of screen
+                leftMargin = 40
+                rightMargin = 40
+                gravity = android.view.Gravity.TOP
+            }
+            progressDrawable = ContextCompat.getDrawable(context, R.drawable.happiness_progress)
+            background = null
+            translationZ = 5f
+        }
+
+        val happinessText = android.widget.TextView(this).apply {
+            text = "Happiness ${CapyActivity.happiness}/1000"
+            textSize = 25f
+            setTextColor(android.graphics.Color.WHITE)
+            setShadowLayer(4f, 2f, 2f, android.graphics.Color.BLACK)
+            layoutParams = FrameLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT).apply {
+                topMargin = 50 + barHeight + 8 // position under the bar
+                gravity = android.view.Gravity.TOP
+            }
+            textAlignment = android.view.View.TEXT_ALIGNMENT_CENTER
+        }
+        pethomeView.setOnCapybaraTouchedListener {
+            CapyActivity.happiness = (CapyActivity.happiness + 1).coerceAtMost(1000)
+            happinessBar.progress = CapyActivity.happiness
+            happinessText.text = "Happiness ${CapyActivity.happiness}/1000"
+        }
+
+        val overlayLayout = FrameLayout(this).apply {
+            layoutParams = FrameLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT)
+            addView(pethomeView)
+            addView(happinessBar)
+            addView(happinessText)
+        }
+
         val root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             layoutParams = LinearLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT)
-
-            //pethomeview
-            addView(pethomeView, LinearLayout.LayoutParams(MATCH_PARENT, 0, 1f))
-
-            //banner
+            addView(overlayLayout, LinearLayout.LayoutParams(MATCH_PARENT, 0, 1f))
             addView(adView, LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT))
         }
+
         setContentView(root)
+
+        // Timer to decrease happiness
+        val handler = android.os.Handler()
+        val runnable = object : Runnable {
+            override fun run() {
+                if (CapyActivity.happiness > 0) {
+                    CapyActivity.happiness -= 5
+                    happinessBar.progress = CapyActivity.happiness
+                    happinessText.text = "Happiness ${CapyActivity.happiness}/1000"
+                    handler.postDelayed(this, 500)
+                }
+            }
+        }
+        handler.post(runnable)
     }
+
+
+
 }

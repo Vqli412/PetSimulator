@@ -1,7 +1,6 @@
 package com.example.finalproject
 
-class CapyActivity {
-    private var name = ""
-    
-
+object CapyActivity {
+    var name: String = ""
+    var happiness: Int = 1000
 }
