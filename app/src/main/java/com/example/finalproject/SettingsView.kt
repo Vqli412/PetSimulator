@@ -1,12 +1,11 @@
 package com.example.finalproject
 
 import android.content.Context
+import android.graphics.Color
 import android.util.AttributeSet
 import android.view.Gravity
-import android.widget.FrameLayout
-import android.widget.LinearLayout
-import android.widget.Switch
-import android.widget.TextView
+import android.widget.*
+import androidx.core.content.ContextCompat
 import androidx.core.view.setMargins
 
 class SettingsView @JvmOverloads constructor(
@@ -18,23 +17,38 @@ class SettingsView @JvmOverloads constructor(
     private val titleTextView: TextView
     private val soundSwitch: Switch
     private val themeSwitch: Switch
+    private val backButton: Button
 
     init {
-        // Set up the root layout
-        layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
-        setPadding(32, 32, 32, 32)
+        setBackgroundColor(ContextCompat.getColor(context, R.color.stardew_bg)) // pastel background
 
-        // Create a vertical LinearLayout to hold all elements
         val mainLayout = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
-            layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
+            layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
+            gravity = Gravity.CENTER_HORIZONTAL
+            setPadding(48, 48, 48, 48)
         }
 
-        // Title Text
+        // Back Button
+        backButton = Button(context).apply {
+            text = "← Back"
+            textSize = 16f
+            setBackgroundColor(ContextCompat.getColor(context, R.color.stardew_accent))
+            setTextColor(Color.WHITE)
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                gravity = Gravity.START
+                setMargins(0, 0, 0, 24)
+            }
+        }
+
         titleTextView = TextView(context).apply {
             text = "Settings"
-            textSize = 24f
+            textSize = 32f
             gravity = Gravity.CENTER
+            setTextColor(ContextCompat.getColor(context, R.color.stardew_title))
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
@@ -43,84 +57,54 @@ class SettingsView @JvmOverloads constructor(
             }
         }
 
-        // Sound Toggle
-        val soundContainer = createToggleContainer(
-            context,
-            "Sound Effects",
-            "Enable or disable game sounds"
-        )
+        // Containers
+        val soundContainer = createToggleContainer("Sound Effects", "Enable or disable game sounds")
         soundSwitch = Switch(context).apply {
             isChecked = true
         }
-        (soundContainer.layoutParams as LinearLayout.LayoutParams).setMargins(0, 0, 0, 16)
         soundContainer.addView(soundSwitch)
 
-        // Theme Toggle
-        val themeContainer = createToggleContainer(
-            context,
-            "Theme",
-            "Set day or night theme"
-        )
+        val themeContainer = createToggleContainer("Theme", "Toggle between day and night theme")
         themeSwitch = Switch(context).apply {
             isChecked = true
         }
         themeContainer.addView(themeSwitch)
 
-        // Add all views to main layout
+        // Add everything to layout
+        mainLayout.addView(backButton)
         mainLayout.addView(titleTextView)
         mainLayout.addView(soundContainer)
         mainLayout.addView(themeContainer)
 
-        // Add main layout to this custom view
         addView(mainLayout)
     }
 
-    private fun createToggleContainer(
-        context: Context,
-        title: String,
-        subtitle: String
-    ): LinearLayout {
+    private fun createToggleContainer(title: String, subtitle: String): LinearLayout {
         return LinearLayout(context).apply {
             orientation = LinearLayout.HORIZONTAL
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
-            )
+            ).apply {
+                setMargins(0, 0, 0, 32)
+            }
 
-            // Text container
             val textContainer = LinearLayout(context).apply {
                 orientation = LinearLayout.VERTICAL
-                layoutParams = LinearLayout.LayoutParams(
-                    0,
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    1f
-                )
+                layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
             }
 
-            // Title
-            TextView(context).apply {
+            textContainer.addView(TextView(context).apply {
                 text = title
-                textSize = 18f
-                layoutParams = LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-                )
-                textContainer.addView(this)
-            }
+                textSize = 20f
+                setTextColor(ContextCompat.getColor(context, R.color.stardew_text))
+            })
 
-            // Subtitle
-            TextView(context).apply {
+            textContainer.addView(TextView(context).apply {
                 text = subtitle
-                textSize = 12f
-                setTextColor(resources.getColor(android.R.color.darker_gray))
-                layoutParams = LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-                ).apply {
-                    setMargins(0, 4, 0, 0)
-                }
-                textContainer.addView(this)
-            }
+                textSize = 14f
+                setTextColor(ContextCompat.getColor(context, R.color.stardew_hint))
+            })
 
             addView(textContainer)
         }
@@ -131,19 +115,19 @@ class SettingsView @JvmOverloads constructor(
     }
 
     fun setOnSoundToggleChanged(listener: (Boolean) -> Unit) {
-        soundSwitch.setOnCheckedChangeListener { _, isChecked ->
-            listener(isChecked)
-        }
+        soundSwitch.setOnCheckedChangeListener { _, isChecked -> listener(isChecked) }
     }
 
     fun setOnThemeToggleChanged(listener: (Boolean) -> Unit) {
-        themeSwitch.setOnCheckedChangeListener { _, isChecked ->
-            listener(isChecked)
-        }
+        themeSwitch.setOnCheckedChangeListener { _, isChecked -> listener(isChecked) }
     }
 
     fun setInitialSettings(soundEnabled: Boolean, themeIsDay: Boolean) {
         soundSwitch.isChecked = soundEnabled
         themeSwitch.isChecked = themeIsDay
+    }
+
+    fun setOnBackButtonClicked(listener: () -> Unit) {
+        backButton.setOnClickListener { listener() }
     }
 }

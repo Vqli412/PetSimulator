@@ -14,13 +14,9 @@ class PethomeView : View {
     private lateinit var daytime: Bitmap
     private lateinit var nighttime: Bitmap
 
-    private lateinit var settings: Bitmap
-    private val settingsRect = Rect()
-    private var settingsClickListener: (() -> Unit)? = null
-
     private var width: Int = 0
     private var height: Int = 0
-    private var useNight = false
+    private var isDay = true
 
     private var capybara: Bitmap? = null
     private var normalCapybara: Bitmap? = null
@@ -36,16 +32,18 @@ class PethomeView : View {
         paint = Paint()
         daytime = BitmapFactory.decodeResource(resources, R.drawable.daytime)
         nighttime = BitmapFactory.decodeResource(resources, R.drawable.nighttime)
-        settings = BitmapFactory.decodeResource(resources, R.drawable.settings)
         this.width = width
         this.height = height
+        val prefs = context.getSharedPreferences(SettingsActivity.PREFS, Context.MODE_PRIVATE)
+        isDay = prefs.getBoolean(SettingsActivity.KEY_THEME_IS_DAY, true)
     }
+
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
         // Draw background
-        val bg = if (useNight) nighttime else daytime
+        val bg = if (isDay) daytime else nighttime
         val srcRect = Rect(0, 0, bg.width, bg.height)
         val dstRect = Rect(0, 0, width, height)
         canvas.drawBitmap(bg, srcRect, dstRect, paint)
@@ -58,15 +56,7 @@ class PethomeView : View {
             canvas.drawBitmap(it, left.toFloat(), top.toFloat(), paint)
             capybaraRect = Rect(left, top, left + it.width, top + it.height)
         }
-    }
 
-    fun toggleDayNight() {
-        useNight = !useNight
-        invalidate()
-    }
-
-    fun setOnSettingsClickListener(listener: () -> Unit) {
-        settingsClickListener = listener
     }
 
     fun setCapybaraImage(resId: Int) {
@@ -75,8 +65,14 @@ class PethomeView : View {
         val aspectRatio = original.height.toFloat() / original.width
         val targetHeight = (targetWidth * aspectRatio).toInt()
 
-        normalCapybara = Bitmap.createScaledBitmap(original, targetWidth, targetHeight, true)
-        capybara = normalCapybara
+        val defaultBitmap = Bitmap.createScaledBitmap(original, targetWidth, targetHeight, true)
+
+        val sleepingResId = when (resId) {
+            R.drawable.boba_capy_default -> R.drawable.boba_capy_sleeping
+            R.drawable.clover_capy_default -> R.drawable.clover_capy_sleeping
+            R.drawable.orange_capy_default -> R.drawable.orange_capy_sleeping
+            else -> resId
+        }
 
         val pettingResId = when (resId) {
             R.drawable.boba_capy_default -> R.drawable.boba_capy_petting
@@ -85,9 +81,19 @@ class PethomeView : View {
             else -> resId
         }
 
-        val pettingOriginal = BitmapFactory.decodeResource(resources, pettingResId)
-        pettingCapybara = Bitmap.createScaledBitmap(pettingOriginal, targetWidth, targetHeight, true)
+        normalCapybara = if (!isDay) {
+            val sleepingOriginal = BitmapFactory.decodeResource(resources, sleepingResId)
+            Bitmap.createScaledBitmap(sleepingOriginal, targetWidth, targetHeight, true)
+        } else {
+            defaultBitmap
+        }
 
+        pettingCapybara = Bitmap.createScaledBitmap(
+            BitmapFactory.decodeResource(resources, pettingResId),
+            targetWidth, targetHeight, true
+        )
+
+        capybara = normalCapybara
         invalidate()
     }
 
@@ -97,13 +103,14 @@ class PethomeView : View {
 
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
-                if (capybaraRect?.contains(x, y) == true) {
+                if (capybaraRect?.contains(x, y) == true and isDay) {
                     isDraggingCapybara = true
                     isPetting = true
                     onCapybaraTouched?.invoke()
                     invalidate()
                     return true
                 }
+
             }
             MotionEvent.ACTION_MOVE -> {
                 if (isDraggingCapybara) {

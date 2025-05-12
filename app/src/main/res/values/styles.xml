@@ -1,0 +1,13 @@
+<resources>
+    <!-- Day Theme -->
+    <style name="AppTheme_Day" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:windowBackground">@color/day_background</item>
+        <!-- Add other day-related styling -->
+    </style>
+
+    <!-- Night Theme -->
+    <style name="AppTheme_Night" parent="Theme.AppCompat.DayNight.DarkActionBar">
+        <item name="android:windowBackground">@color/night_background</item>
+        <!-- Add other night-related styling -->
+    </style>
+</resources>

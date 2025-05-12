@@ -3,4 +3,16 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="red">#FFFF0000</color>
+    <color name="day_background">#FFFFFF</color> <!-- White background for Day Theme -->
+    <color name="day_text">#000000</color>     <!-- Black text for Day Theme -->
+
+    <!-- Colors for Night Theme -->
+    <color name="night_background">#121212</color> <!-- Dark background for Night Theme -->
+    <color name="night_text">#FFFFFF</color>
+    <color name="stardew_bg">#FFF6E5</color> <!-- Light pastel yellow -->
+    <color name="stardew_accent">#FFA07A</color> <!-- Light salmon -->
+    <color name="stardew_text">#5C4033</color> <!-- Brownish text -->
+    <color name="stardew_hint">#A9A9A9</color> <!-- Light gray hint -->
+    <color name="stardew_title">#8B4513</color> <!-- SaddleBrown title -->
+
 </resources>

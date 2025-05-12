@@ -7,32 +7,34 @@ import androidx.appcompat.app.AppCompatActivity
 class SettingsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
         val prefs = getSharedPreferences(PREFS, Context.MODE_PRIVATE)
         val isDay = prefs.getBoolean(KEY_THEME_IS_DAY, true)
 
-        // Create the SettingsView
+        // Apply theme before super.onCreate
+        if (!isDay) {
+            setTheme(R.style.AppTheme_Night)
+        } else {
+            setTheme(R.style.AppTheme_Day)
+        }
+
+        super.onCreate(savedInstanceState)
+
         val settingsView = SettingsView(this).apply {
             setTitle("Game Settings")
 
-            // Load saved preferences (you would typically use SharedPreferences)
-            setInitialSettings(
-                soundEnabled = true, //default value
-                themeIsDay   = isDay
-            )
+            setInitialSettings(soundEnabled = true, themeIsDay = isDay)
 
-            // Set up toggle listeners
-            setOnSoundToggleChanged { isChecked ->
+            setOnSoundToggleChanged {
                 // Save sound preference
-                // Example: sharedPreferences.edit().putBoolean("sound_enabled", isChecked).apply()
             }
 
             setOnThemeToggleChanged { isChecked ->
-                val prefs = getSharedPreferences(PREFS, Context.MODE_PRIVATE)
-                prefs.edit()
-                    .putBoolean(KEY_THEME_IS_DAY, isChecked)
-                    .apply()
+                prefs.edit().putBoolean(KEY_THEME_IS_DAY, isChecked).apply()
+                recreate()
+            }
+
+            setOnBackButtonClicked {
+                finish() // Go back to PethomeActivity or previous screen
             }
         }
 
@@ -40,7 +42,7 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     companion object {
-        val PREFS = "game_prefs"
-        val KEY_THEME_IS_DAY = "theme_is_day"
+        const val PREFS = "game_prefs"
+        const val KEY_THEME_IS_DAY = "theme_is_day"
     }
 }

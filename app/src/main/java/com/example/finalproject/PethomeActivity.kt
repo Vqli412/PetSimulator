@@ -22,15 +22,7 @@ class PethomeActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val capyResId = intent.getIntExtra("capyResId", 0)
 
-        val petView = PethomeView(this, resources.displayMetrics.widthPixels, resources.displayMetrics.heightPixels)
-
-        if (capyResId != 0) {
-            petView.setCapybaraImage(capyResId)
-        }
-
-        setContentView(petView)
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
@@ -88,16 +80,41 @@ class PethomeActivity : AppCompatActivity() {
             textAlignment = android.view.View.TEXT_ALIGNMENT_CENTER
         }
         pethomeView.setOnCapybaraTouchedListener {
-            CapyActivity.happiness = (CapyActivity.happiness + 1).coerceAtMost(1000)
+            CapyActivity.happiness = (CapyActivity.happiness + 2).coerceAtMost(1000)
             happinessBar.progress = CapyActivity.happiness
             happinessText.text = "Happiness ${CapyActivity.happiness}/1000"
         }
+        val settingsButton = android.widget.ImageButton(this).apply {
+            setImageResource(R.drawable.settings) // Your settings icon
+
+            // Ensure the image is scaled down to fit within the button bounds
+            scaleType = android.widget.ImageView.ScaleType.FIT_CENTER
+
+            // Optional: Remove background and padding for clean appearance
+            background = null
+            setPadding(0, 0, 0, 0)
+
+            layoutParams = FrameLayout.LayoutParams(150, 150).apply {
+                gravity = android.view.Gravity.BOTTOM or android.view.Gravity.END
+                bottomMargin = 60
+                rightMargin = 60
+            }
+
+            setOnClickListener {
+                val intent = Intent(this@PethomeActivity, SettingsActivity::class.java)
+                startActivity(intent)
+            }
+        }
+
+
 
         val overlayLayout = FrameLayout(this).apply {
             layoutParams = FrameLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT)
             addView(pethomeView)
             addView(happinessBar)
             addView(happinessText)
+            addView(settingsButton)
+
         }
 
         val root = LinearLayout(this).apply {
@@ -113,11 +130,13 @@ class PethomeActivity : AppCompatActivity() {
         val handler = android.os.Handler()
         val runnable = object : Runnable {
             override fun run() {
-                if (CapyActivity.happiness > 0) {
+                if (CapyActivity.happiness > 5) {
                     CapyActivity.happiness -= 5
                     happinessBar.progress = CapyActivity.happiness
                     happinessText.text = "Happiness ${CapyActivity.happiness}/1000"
-                    handler.postDelayed(this, 500)
+                    handler.postDelayed(this, 700)
+                } else if (CapyActivity.happiness > 0){
+                    CapyActivity.happiness = 0
                 }
             }
         }
