@@ -1,6 +1,6 @@
 package com.example.finalproject
 
-class Animal {
+class CapyActivity {
     private var name = ""
     
 

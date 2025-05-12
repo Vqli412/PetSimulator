@@ -14,6 +14,7 @@ class PethomeView : View {
     private var width : Int = 0
     private var height : Int = 0
     private var useNight = false
+    private var capybara: Bitmap? = null
 
     constructor(context: Context, width: Int, height: Int) : super(context)  {
         paint = Paint()
@@ -34,12 +35,25 @@ class PethomeView : View {
         val dstRect = Rect(0, 0, width, height)
         canvas.drawBitmap(bg, srcRect, dstRect, paint)
 
-        //draw gacha capybara here, should be associated with firebase account
+        capybara?.let {
+            val left = (bg.width - it.width) / 6
+            val top = (bg.height - it.height) / 3
+            canvas.drawBitmap(it, left.toFloat(), top.toFloat(), paint)
+        }
 
     }
 
     fun toggleDayNight() { //use this method for toggling the switch
         useNight = !useNight
+        invalidate()
+    }
+    fun setCapybaraImage(resId: Int) {
+        val original = BitmapFactory.decodeResource(resources, resId)
+        val targetWidth = (width * 0.75).toInt()
+        val aspectRatio = original.height.toFloat() / original.width
+        val targetHeight = (targetWidth * aspectRatio).toInt()
+
+        capybara = Bitmap.createScaledBitmap(original, targetWidth, targetHeight, true)
         invalidate()
     }
 }

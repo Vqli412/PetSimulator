@@ -17,11 +17,22 @@ class PethomeActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val capyResId = intent.getIntExtra("capyResId", 0)
+
+        val petView = PethomeView(this, resources.displayMetrics.widthPixels, resources.displayMetrics.heightPixels)
+
+        if (capyResId != 0) {
+            petView.setCapybaraImage(capyResId)
+        }
+
+        setContentView(petView)
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
-        buildViewByCode()
+        if (hasFocus) {
+            buildViewByCode()
+        }
     }
 
     fun buildViewByCode() {
@@ -32,6 +43,12 @@ class PethomeActivity : AppCompatActivity() {
         var statusBar: Int = rectangle.top
 
         pethomeView = PethomeView(this, width, height - statusBar)
+
+
+        val capyResId = intent.getIntExtra("capyResId", 0)
+        if (capyResId != 0) {
+            pethomeView.setCapybaraImage(capyResId)
+        }
 
         //create and configure adview
         adView = AdView(this).apply {
