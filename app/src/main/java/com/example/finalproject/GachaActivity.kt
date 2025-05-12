@@ -10,11 +10,16 @@ class GachaActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         val gachaView = GachaView(this).apply {
-            setOnSelectClickListener {
-                Toast.makeText(context, "Capybara selected!", Toast.LENGTH_SHORT).show()
-            }
-            setOnProceedClickListener {
-                startActivity(Intent(this@GachaActivity, PethomeActivity::class.java))
+            setOnProceedListener { capyResId, capyName ->
+                if (capyResId == 0) {
+                    Toast.makeText(context, "Please select a reward first!", Toast.LENGTH_SHORT).show()
+                } else {
+                    val intent = Intent(context, PethomeActivity::class.java).apply {
+                        putExtra("capyResId", capyResId)
+                        putExtra("capyName", capyName)
+                    }
+                    context.startActivity(intent)
+                }
             }
         }
 

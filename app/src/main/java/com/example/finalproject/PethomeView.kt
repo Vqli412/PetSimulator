@@ -20,7 +20,9 @@ class PethomeView : View {
 
     private var width : Int = 0
     private var height : Int = 0
-    private var isDay = false
+    private var useNight = false
+    private var capybara: Bitmap? = null
+
 
     constructor(context: Context, width: Int, height: Int, isDay : Boolean) : super(context)  {
         paint = Paint()
@@ -44,7 +46,11 @@ class PethomeView : View {
         val dstRect = Rect(0, 0, width, height)
         canvas.drawBitmap(bg, srcRect, dstRect, paint)
 
-        //draw gacha capybara here, should be associated with firebase account
+        capybara?.let {
+            val left = (bg.width - it.width) / 6
+            val top = (bg.height - it.height) / 3
+            canvas.drawBitmap(it, left.toFloat(), top.toFloat(), paint)
+        }
 
         //draw settings button
         val scale = 0.1f
@@ -61,16 +67,14 @@ class PethomeView : View {
     fun setOnSettingsClickListener(listener: () -> Unit) {
         settingsClickListener = listener
     }
+    fun setCapybaraImage(resId: Int) {
+        val original = BitmapFactory.decodeResource(resources, resId)
+        val targetWidth = (width * 0.75).toInt()
+        val aspectRatio = original.height.toFloat() / original.width
+        val targetHeight = (targetWidth * aspectRatio).toInt()
 
-    override fun onTouchEvent(event: MotionEvent): Boolean {
-        if (event.action == MotionEvent.ACTION_UP) {
-            // if the user lifted their finger inside settingsRect
-            if (settingsRect.contains(event.x.toInt(), event.y.toInt())) {
-                settingsClickListener?.invoke()
-                return true
-            }
-        }
-        return super.onTouchEvent(event)
+        capybara = Bitmap.createScaledBitmap(original, targetWidth, targetHeight, true)
+        invalidate()
     }
 
 }

@@ -19,7 +19,20 @@ class PethomeActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        window.decorView.post {
+        val capyResId = intent.getIntExtra("capyResId", 0)
+
+        val petView = PethomeView(this, resources.displayMetrics.widthPixels, resources.displayMetrics.heightPixels)
+
+        if (capyResId != 0) {
+            petView.setCapybaraImage(capyResId)
+        }
+
+        setContentView(petView)
+    }
+
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (hasFocus) {
             buildViewByCode()
         }
     }
@@ -38,6 +51,12 @@ class PethomeActivity : AppCompatActivity() {
         pethomeView.setOnSettingsClickListener {
             Log.d("MainActivity", "Settings tapped!")
             startActivity(Intent(this, SettingsActivity::class.java))
+        }
+
+
+        val capyResId = intent.getIntExtra("capyResId", 0)
+        if (capyResId != 0) {
+            pethomeView.setCapybaraImage(capyResId)
         }
 
         //create and configure adview

@@ -1,15 +1,12 @@
 package com.example.finalproject
+
 import android.animation.ObjectAnimator
 import android.content.Context
 import android.graphics.Color
 import android.util.AttributeSet
 import android.util.Log
 import android.view.Gravity
-import android.widget.Button
-import android.widget.FrameLayout
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
+import android.widget.*
 import androidx.core.view.setMargins
 import kotlin.random.Random
 
@@ -24,21 +21,21 @@ class GachaView @JvmOverloads constructor(
     private val selectButton: Button
     private val proceedButton: Button
 
-    private var clickCount = 0
     private var lastRewardRes: Int = 0
+    private var lastRewardMessage: String = ""
+    private var isBoxOpened = false
+
     private val petDrawables = listOf(
         R.drawable.orange_capy_default,
         R.drawable.boba_capy_default,
         R.drawable.clover_capy_default
     )
 
-
     init {
-        // Set up the main container
+        // Layout setup
         layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
         setBackgroundColor(Color.parseColor("#F5F5F5"))
 
-        // Create a vertical LinearLayout to hold all elements
         val mainLayout = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
             gravity = Gravity.CENTER_HORIZONTAL
@@ -50,7 +47,6 @@ class GachaView @JvmOverloads constructor(
             }
         }
 
-        // Title Text
         titleTextView = TextView(context).apply {
             text = "Gacha Reward"
             textSize = 24f
@@ -64,9 +60,8 @@ class GachaView @JvmOverloads constructor(
             }
         }
 
-        // Reward ImageView (replaces the placeholder)
         rewardImageView = ImageView(context).apply {
-            setImageResource(R.drawable.giftbox_closed) // Set default image
+            setImageResource(R.drawable.giftbox_closed)
             scaleType = ImageView.ScaleType.CENTER_CROP
             layoutParams = LinearLayout.LayoutParams(
                 resources.getDimensionPixelSize(R.dimen.reward_size),
@@ -76,7 +71,6 @@ class GachaView @JvmOverloads constructor(
             }
         }
 
-        // Button container (horizontal layout)
         val buttonContainer = LinearLayout(context).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER
@@ -88,7 +82,6 @@ class GachaView @JvmOverloads constructor(
             }
         }
 
-        // Select Button
         selectButton = Button(context).apply {
             text = "Select Reward"
             setBackgroundColor(Color.parseColor("#03DAC6"))
@@ -100,7 +93,6 @@ class GachaView @JvmOverloads constructor(
             }
         }
 
-        // Proceed Button
         proceedButton = Button(context).apply {
             text = "Proceed"
             setBackgroundColor(Color.parseColor("#3700B3"))
@@ -111,106 +103,83 @@ class GachaView @JvmOverloads constructor(
             )
         }
 
-        // Add buttons to button container
         buttonContainer.addView(selectButton)
         buttonContainer.addView(proceedButton)
 
-        // Add all views to main layout
         mainLayout.addView(titleTextView)
         mainLayout.addView(rewardImageView)
         mainLayout.addView(buttonContainer)
 
-        // Add main layout to this custom view
         addView(mainLayout)
 
-        // Initialize the click logic on the box image
-        setupBoxClicks()
-
-        // Set up click listeners
         setupClickListeners()
     }
 
-    private fun setupBoxClicks() {
-        rewardImageView.setOnClickListener {
-            clickCount++
-            when (clickCount) {
-                in 1..2 -> {
-                    //jiggle box on 1st and 2nd click
-                    ObjectAnimator.ofFloat(
-                        rewardImageView,
-                        "translationX",
-                        0f, 25f, -25f, 15f, -15f, 0f
-                    ).apply {
-                        duration = 300L
-                        start()
-                    }
-                }
-                3 -> {
-                    // show opened box on the 3rd click
-                    rewardImageView.setImageResource(R.drawable.giftbox_open)
-                    postDelayed({
-                       randomRewardImage()
-                        rewardImageView.apply {
-                            alpha = 0f
-                            scaleX = 0.8f
-                            scaleY = 0.8f
-                            animate()
-                                .alpha(1f)
-                                .scaleX(1f)
-                                .scaleY(1f)
-                                .setDuration(400L)
-                                .start()
-                        }
-                        setTitle(randomRewardMessage())
-                    }, 800L)
-                }
-                else -> {
-                    Log.w("MainActivity", "box already opened")
-                }
-            }
-        }
-    }
-
-
     private fun setupClickListeners() {
         selectButton.setOnClickListener {
-            // Visual feedback for selection
-            rewardImageView.setColorFilter(Color.argb(150, 255, 215, 0)) // Gold tint
+            if (!isBoxOpened) {
+                // Shake effect
+                ObjectAnimator.ofFloat(
+                    rewardImageView,
+                    "translationX",
+                    0f, 25f, -25f, 15f, -15f, 0f
+                ).apply {
+                    duration = 300L
+                    start()
+                }
+
+                // Reveal reward after delay
+                postDelayed({
+                    rewardImageView.setImageResource(R.drawable.giftbox_open)
+                    randomRewardImage()
+                    rewardImageView.apply {
+                        alpha = 0f
+                        scaleX = 0.8f
+                        scaleY = 0.8f
+                        animate()
+                            .alpha(1f)
+                            .scaleX(1f)
+                            .scaleY(1f)
+                            .setDuration(400L)
+                            .start()
+                    }
+                    setTitle(randomRewardMessage())
+                    isBoxOpened = true
+                }, 600L)
+            } else {
+                Log.d("GachaView", "Box already opened.")
+            }
         }
 
         proceedButton.setOnClickListener {
-            // Remove selection effect when proceeding
             rewardImageView.clearColorFilter()
+            onProceedListener?.invoke(lastRewardRes, lastRewardMessage)
         }
     }
 
-    // Public methods to customize the view
+    private fun randomRewardImage() {
+        lastRewardRes = petDrawables.random()
+        rewardImageView.setImageResource(lastRewardRes)
+    }
+
+    private fun randomRewardMessage(): String {
+        lastRewardMessage = when (lastRewardRes) {
+            R.drawable.orange_capy_default -> "You got Orange Capybara!"
+            R.drawable.boba_capy_default -> "You got Boba Capybara!"
+            R.drawable.clover_capy_default -> "You got Clover Capybara!"
+            else -> "You got a Capybara!"
+        }
+        return lastRewardMessage
+    }
+
     fun setTitle(title: String) {
         titleTextView.text = title
     }
 
-    fun randomRewardImage() {
-        lastRewardRes = petDrawables[Random.nextInt(petDrawables.size)]
-        rewardImageView.setImageResource(lastRewardRes)
-    }
+    // Callback for Proceed button
+    private var onProceedListener: ((Int, String) -> Unit)? = null
 
-    fun randomRewardMessage(): String  {
-        var res = ""
-        if (lastRewardRes == petDrawables[0]) {
-            res = "You got Orange Capybara!"
-        } else if (lastRewardRes == petDrawables[1]) {
-            res = "You got Boba Capybara!"
-        } else if (lastRewardRes == petDrawables[2]) {
-            res = "You got Clover Capybara!"
-        }
-        return res
-    }
-
-    fun setOnSelectClickListener(listener: OnClickListener) {
-        selectButton.setOnClickListener(listener)
-    }
-
-    fun setOnProceedClickListener(listener: OnClickListener) {
-        proceedButton.setOnClickListener(listener)
+    fun setOnProceedListener(listener: (capyResId: Int, capyName: String) -> Unit) {
+        onProceedListener = listener
     }
 }
