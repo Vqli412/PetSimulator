@@ -162,10 +162,10 @@ class GachaView @JvmOverloads constructor(
                     duration = 300L
                     start()
                 }
-
+                isBoxOpened = true
+                postDelayed({rewardImageView.setImageResource(R.drawable.giftbox_open)}, 500L)
                 // Reveal reward after delay
                 postDelayed({
-                    rewardImageView.setImageResource(R.drawable.giftbox_open)
                     randomRewardImage()
                     rewardImageView.apply {
                         alpha = 0f
@@ -179,8 +179,7 @@ class GachaView @JvmOverloads constructor(
                             .start()
                     }
                     setTitle(randomRewardMessage())
-                    isBoxOpened = true
-                }, 600L)
+                }, 1100L)
             } else {
                 Log.d("GachaView", "Box already opened.")
             }

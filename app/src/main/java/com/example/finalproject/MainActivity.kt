@@ -32,7 +32,8 @@ class MainActivity : AppCompatActivity() {
     @IgnoreExtraProperties
     data class User(
         var email: String = "",
-        var password: String = ""
+        var password: String = "",
+        var pet: Int = 0
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -82,12 +83,16 @@ class MainActivity : AppCompatActivity() {
             } else {
                 //add the user if the user does not exist
                 //generates a new unique key for the new user object
-                val newUserRef = usersReference.push()
-                newUserRef.setValue(user)
-                Log.w("MainActivity", "User added")
-                //goes to the gacha page when account first created
-                var intent : Intent = Intent(this@MainActivity, GachaActivity::class.java)
-                startActivity(intent)
+                if (regEmail.text.length < 1 || regPass.text.length < 1) {
+                    regError.text = "Credentials must be at least 1 character long"
+                } else {
+                    val newUserRef = usersReference.push()
+                    newUserRef.setValue(user)
+                    Log.w("MainActivity", "User added")
+                    //goes to the gacha page when account first created
+                    var intent: Intent = Intent(this@MainActivity, GachaActivity::class.java)
+                    startActivity(intent)
+                }
             }
         }
 
@@ -107,9 +112,15 @@ class MainActivity : AppCompatActivity() {
                     if (userPass == logPass.text.toString()) {
                         Log.w("MainActivity", "Password Matches")
                         user = foundUser
-                        // if password matches go to the homepage
-                        var intent : Intent = Intent(this@MainActivity, GachaActivity::class.java)
-                        startActivity(intent)
+                        // if password matches, then check if the user has rolled a pet already
+                        //if user does not have a pet, represented as 0, go to the gacha page, else go to home page
+                        if (foundUser.pet == 0) {
+                            var intent : Intent = Intent(this@MainActivity, GachaActivity::class.java)
+                            startActivity(intent)
+                        } else {
+                            var intent : Intent = Intent(this@MainActivity, PethomeActivity::class.java)
+                            startActivity(intent)
+                        }
                     } else {
                         Log.w("MainActivity", "Password does not matches")
                         logError.text = "Wrong Password!"
