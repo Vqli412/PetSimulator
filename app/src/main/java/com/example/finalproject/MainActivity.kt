@@ -12,6 +12,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.IgnoreExtraProperties
+import com.example.finalproject.DBUser
 import com.google.firebase.database.ValueEventListener
 import org.w3c.dom.Text
 
@@ -25,8 +26,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var regError: TextView
     private lateinit var logError: TextView
     private lateinit var firebase: FirebaseDatabase
-    private lateinit var usersReference: DatabaseReference
-    private lateinit var user: User
+    private lateinit var user: DBUser
 
     //class for the user object for the firebase database
 
@@ -51,21 +51,21 @@ class MainActivity : AppCompatActivity() {
 
     fun register() {
         //creates new user to add
-        user = User(regEmail.text.toString(), regPass.text.toString())
+        email = regEmail.text.toString()
+        password = regPass.text.toString()
+        user = DBUser(email, password, -1)
         var regListener: RegisterListener = RegisterListener()
-        usersReference.orderByChild("email").equalTo(regEmail.text.toString())
+        //get objects by the emails
+        usersReference.orderByChild("email").equalTo(email)
             .addListenerForSingleValueEvent(regListener)
     }
 
     fun login() {
+        email = logEmail.text.toString()
+        password = logPass.text.toString()
         var logListener: LoginListener = LoginListener()
-        usersReference.orderByChild("email").equalTo(logEmail.text.toString())
+        usersReference.orderByChild("email").equalTo(email)
             .addListenerForSingleValueEvent(logListener)
-
-        //need to implement a check to see if the user has pulled before:
-        //if not pulled, bring to gacha
-        //else if pulled, bring to pet homescreen
-
     }
 
     //checks if the user exists in the database
@@ -77,11 +77,11 @@ class MainActivity : AppCompatActivity() {
             } else {
                 //add the user if the user does not exist
                 //generates a new unique key for the new user object
+                val newUserRef = usersReference.push()
+                newUserRef.setValue(user)
                 if (regEmail.text.length < 1 || regPass.text.length < 1) {
                     regError.text = "Credentials must be at least 1 character long"
                 } else {
-                    val newUserRef = usersReference.push()
-                    newUserRef.setValue(user)
                     Log.w("MainActivity", "User added")
                     //goes to the gacha page when account first created
                     var intent: Intent = Intent(this@MainActivity, GachaActivity::class.java)
@@ -100,7 +100,7 @@ class MainActivity : AppCompatActivity() {
         override fun onDataChange(snapshot: DataSnapshot) {
             if (snapshot.exists()) {
                 var foundInstance = snapshot.children.first() //Get the first child
-                var foundUser = foundInstance.getValue(User::class.java)
+                var foundUser = foundInstance.getValue(DBUser::class.java)
                 if (foundUser != null) {
                     var userPass = foundUser.password
                     if (userPass == logPass.text.toString()) {
@@ -115,16 +115,15 @@ class MainActivity : AppCompatActivity() {
                             val intent = Intent(this@MainActivity, PethomeActivity::class.java).apply {
                                 putExtra("capyResId", foundUser.pet)
                             }
+                            startActivity(intent)
                         }
                     } else {
                         Log.w("MainActivity", "Password does not matches")
                         logError.text = "Wrong Password!"
                     }
-                } else {
-                    Log.w("MainActivity", "Password matches")
                 }
             } else {
-                Log.w("MainActivity", "Email exists")
+                Log.w("MainActivity", "Email does not exists")
                 logError.text = "User does not exist!"
             }
         }
@@ -132,6 +131,11 @@ class MainActivity : AppCompatActivity() {
         override fun onCancelled(error: DatabaseError) {
             Log.w("MainActivity", "error")
         }
+    }
 
+    companion object {
+        public lateinit var usersReference: DatabaseReference
+        public lateinit var email: String
+        public lateinit var password: String
     }
 }

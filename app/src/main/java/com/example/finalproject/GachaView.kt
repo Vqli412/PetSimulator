@@ -2,12 +2,21 @@ package com.example.finalproject
 
 import android.animation.ObjectAnimator
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.util.AttributeSet
 import android.util.Log
 import android.view.Gravity
 import android.widget.*
 import androidx.core.view.setMargins
+import com.example.finalproject.MainActivity.Companion.email
+import com.example.finalproject.MainActivity.Companion.password
+import com.example.finalproject.MainActivity.Companion.usersReference
+import com.example.finalproject.DBUser
+import com.example.finalproject.MainActivity.LoginListener
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
 import kotlin.random.Random
 
 class GachaView @JvmOverloads constructor(
@@ -188,9 +197,37 @@ class GachaView @JvmOverloads constructor(
 
         proceedButton.setOnClickListener {
             rewardImageView.clearColorFilter()
+            modifyUser()
             onProceedListener?.invoke(lastRewardRes, lastRewardMessage)
         }
     }
+
+    fun modifyUser() {
+        var modifyListener: ModifyListener = ModifyListener()
+        MainActivity.usersReference.orderByChild("email").equalTo(MainActivity.email)
+            .addListenerForSingleValueEvent(modifyListener)
+    }
+
+    inner class ModifyListener(): ValueEventListener {
+        override fun onDataChange(snapshot: DataSnapshot) {
+            if (snapshot.exists()) {
+                var foundInstance = snapshot.children.first() //Get the first child
+                var userRef = foundInstance.ref
+                var foundUser = foundInstance.getValue(DBUser::class.java)
+                if (foundUser != null) {
+                    foundUser.pet = lastRewardRes
+                    userRef.setValue(foundUser)
+                }
+            } else {
+                Log.w("MainActivity", "Email does not exists")
+            }
+        }
+
+        override fun onCancelled(error: DatabaseError) {
+            Log.w("MainActivity", "error")
+        }
+    }
+
 
     private fun randomRewardImage() {
         lastRewardRes = petDrawables.random()
