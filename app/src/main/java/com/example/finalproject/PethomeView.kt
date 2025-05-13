@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Rect
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 
@@ -22,10 +23,8 @@ class PethomeView : View {
     private var normalCapybara: Bitmap? = null
     private var pettingCapybara: Bitmap? = null
     private var capybaraRect: Rect? = null
-    private var onCapybaraTouched: (() -> Unit)? = null
 
-    private var isDraggingCapybara = false
-    private var isPetting = false
+    private var pethomeModel: PethomeModel
 
 
     constructor(context: Context, width: Int, height: Int) : super(context) {
@@ -36,8 +35,15 @@ class PethomeView : View {
         this.height = height
         val prefs = context.getSharedPreferences(SettingsActivity.PREFS, Context.MODE_PRIVATE)
         isDay = prefs.getBoolean(SettingsActivity.KEY_THEME_IS_DAY, true)
+        pethomeModel = PethomeModel()
     }
 
+    fun updateTheme() {
+        daytime = BitmapFactory.decodeResource(resources, R.drawable.daytime)
+        nighttime = BitmapFactory.decodeResource(resources, R.drawable.nighttime)
+        val prefs = context.getSharedPreferences(SettingsActivity.PREFS, Context.MODE_PRIVATE)
+        isDay = prefs.getBoolean(SettingsActivity.KEY_THEME_IS_DAY, true)
+    }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
@@ -49,7 +55,7 @@ class PethomeView : View {
         canvas.drawBitmap(bg, srcRect, dstRect, paint)
 
         // Draw capybara (normal or petting)
-        val toDraw = if (isPetting && pettingCapybara != null) pettingCapybara else normalCapybara
+        val toDraw = if (pethomeModel.isPetting() && pettingCapybara != null) pettingCapybara else normalCapybara
         toDraw?.let {
             val left = (width - it.width) / 2
             val top = (height - it.height) / 2 + 100
@@ -97,38 +103,11 @@ class PethomeView : View {
         invalidate()
     }
 
-    override fun onTouchEvent(event: MotionEvent): Boolean {
-        val x = event.x.toInt()
-        val y = event.y.toInt()
-
-        when (event.action) {
-            MotionEvent.ACTION_DOWN -> {
-                if (isDay && capybaraRect?.contains(x, y) == true) {
-                    isDraggingCapybara = true
-                    isPetting = true
-                    onCapybaraTouched?.invoke()
-                    invalidate()
-                    return true
-                }
-
-            }
-            MotionEvent.ACTION_MOVE -> {
-                if (isDraggingCapybara) {
-                    onCapybaraTouched?.invoke()
-                    return true
-                }
-            }
-            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-                isDraggingCapybara = false
-                isPetting = false
-                invalidate()
-            }
-        }
-
-        return super.onTouchEvent(event)
+    fun isPettable(x: Int, y: Int) : Boolean {
+        return isDay && capybaraRect?.contains(x, y) == true
     }
 
-    fun setOnCapybaraTouchedListener(listener: () -> Unit) {
-        onCapybaraTouched = listener
+    fun getModel(): PethomeModel {
+        return pethomeModel
     }
 }
