@@ -35,6 +35,7 @@ class PethomeView : View {
         this.height = height
         val prefs = context.getSharedPreferences(SettingsActivity.PREFS, Context.MODE_PRIVATE)
         isDay = prefs.getBoolean(SettingsActivity.KEY_THEME_IS_DAY, true)
+
         pethomeModel = PethomeModel()
     }
 

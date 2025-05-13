@@ -1,5 +1,6 @@
 package com.example.finalproject
 
+import android.content.Context
 import android.content.Intent
 import android.graphics.Rect
 import android.media.SoundPool
@@ -31,6 +32,8 @@ class PethomeActivity : AppCompatActivity() {
     private lateinit var pool : SoundPool
     private var rubSoundId : Int = 0
     private var streamId : Int = 0
+
+    private var isSoundOn = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -94,7 +97,12 @@ class PethomeActivity : AppCompatActivity() {
     }
 
     private fun playSound(id : Int ) {
-        streamId = pool.play( id, 1.0f, 1.0f, 0, 0, 2.0f )
+
+        val prefs = this.getSharedPreferences(SettingsActivity.PREFS, Context.MODE_PRIVATE)
+        isSoundOn = prefs.getBoolean(SettingsActivity.KEY_SOUND_IS_ON, true)
+        if (isSoundOn) {
+            streamId = pool.play(id, 1.0f, 1.0f, 0, 0, 2.0f)
+        }
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
