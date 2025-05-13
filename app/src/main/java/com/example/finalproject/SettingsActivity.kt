@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 class SettingsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        supportActionBar?.hide()
         val prefs = getSharedPreferences(PREFS, Context.MODE_PRIVATE)
         val isDay = prefs.getBoolean(KEY_THEME_IS_DAY, true)
 
