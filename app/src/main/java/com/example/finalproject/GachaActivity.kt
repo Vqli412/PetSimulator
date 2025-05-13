@@ -7,14 +7,12 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import java.util.Objects
 import kotlin.math.sqrt
 
 class GachaActivity : AppCompatActivity() {
-
 
     private var sensorManager: SensorManager? = null
     private var acceleration = 0f
@@ -61,8 +59,6 @@ class GachaActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-
         // Getting the Sensor Manager instance
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
 

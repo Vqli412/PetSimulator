@@ -48,7 +48,7 @@ class GachaView @JvmOverloads constructor(
         }
 
         titleTextView = TextView(context).apply {
-            text = "Gacha Reward - shake or click the button to open!"
+            text = "Gacha Reward - shake to open!"
             textSize = 24f
             setTextColor(Color.BLACK)
             gravity = Gravity.CENTER
@@ -151,39 +151,40 @@ class GachaView @JvmOverloads constructor(
     }
 
     private fun setupClickListeners() {
-        selectButton.setOnClickListener {
-            if (!isBoxOpened) {
-                // Shake effect
-                ObjectAnimator.ofFloat(
-                    rewardImageView,
-                    "translationX",
-                    0f, 25f, -25f, 15f, -15f, 0f
-                ).apply {
-                    duration = 300L
-                    start()
-                }
-                isBoxOpened = true
-                postDelayed({rewardImageView.setImageResource(R.drawable.giftbox_open)}, 500L)
-                // Reveal reward after delay
-                postDelayed({
-                    randomRewardImage()
-                    rewardImageView.apply {
-                        alpha = 0f
-                        scaleX = 0.8f
-                        scaleY = 0.8f
-                        animate()
-                            .alpha(1f)
-                            .scaleX(1f)
-                            .scaleY(1f)
-                            .setDuration(400L)
-                            .start()
-                    }
-                    setTitle(randomRewardMessage())
-                }, 1100L)
-            } else {
-                Log.d("GachaView", "Box already opened.")
-            }
-        }
+//        selectButton.setOnClickListener {
+//            if (!isBoxOpened) {
+//                // Shake effect
+//                ObjectAnimator.ofFloat(
+//                    rewardImageView,
+//                    "translationX",
+//                    0f, 25f, -25f, 15f, -15f, 0f
+//                ).apply {
+//                    duration = 300L
+//                    start()
+//                }
+//
+//                // Reveal reward after delay
+//                postDelayed({
+//                    rewardImageView.setImageResource(R.drawable.giftbox_open)
+//                    randomRewardImage()
+//                    rewardImageView.apply {
+//                        alpha = 0f
+//                        scaleX = 0.8f
+//                        scaleY = 0.8f
+//                        animate()
+//                            .alpha(1f)
+//                            .scaleX(1f)
+//                            .scaleY(1f)
+//                            .setDuration(400L)
+//                            .start()
+//                    }
+//                    setTitle(randomRewardMessage())
+//                    isBoxOpened = true
+//                }, 600L)
+//            } else {
+//                Log.d("GachaView", "Box already opened.")
+//            }
+//        }
 
         proceedButton.setOnClickListener {
             rewardImageView.clearColorFilter()
