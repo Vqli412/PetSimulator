@@ -105,6 +105,7 @@ class PethomeActivity : AppCompatActivity() {
     }
 
     fun buildViewByCode() {
+        handler?.removeCallbacks(happinessRunnable!!)
         val capyResId = intent.getIntExtra("capyResId", 0)
         pethomeView.updateTheme()
 
