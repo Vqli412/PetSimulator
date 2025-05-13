@@ -77,7 +77,6 @@ class GachaActivity : AppCompatActivity() {
                 } else {
                     val intent = Intent(context, PethomeActivity::class.java).apply {
                         putExtra("capyResId", capyResId)
-                        putExtra("capyName", capyName)
                     }
                     context.startActivity(intent)
                 }

@@ -194,6 +194,7 @@ class GachaView @JvmOverloads constructor(
 
     private fun randomRewardImage() {
         lastRewardRes = petDrawables.random()
+        // modify the firebase user information
         rewardImageView.setImageResource(lastRewardRes)
     }
 

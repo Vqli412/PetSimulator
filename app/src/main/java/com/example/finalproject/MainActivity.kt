@@ -29,12 +29,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var user: User
 
     //class for the user object for the firebase database
-    @IgnoreExtraProperties
-    data class User(
-        var email: String = "",
-        var password: String = "",
-        var pet: Int = 0
-    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -114,12 +108,13 @@ class MainActivity : AppCompatActivity() {
                         user = foundUser
                         // if password matches, then check if the user has rolled a pet already
                         //if user does not have a pet, represented as 0, go to the gacha page, else go to home page
-                        if (foundUser.pet == 0) {
+                        if (foundUser.pet == -1) {
                             var intent : Intent = Intent(this@MainActivity, GachaActivity::class.java)
                             startActivity(intent)
                         } else {
-                            var intent : Intent = Intent(this@MainActivity, PethomeActivity::class.java)
-                            startActivity(intent)
+                            val intent = Intent(this@MainActivity, PethomeActivity::class.java).apply {
+                                putExtra("capyResId", foundUser.pet)
+                            }
                         }
                     } else {
                         Log.w("MainActivity", "Password does not matches")
